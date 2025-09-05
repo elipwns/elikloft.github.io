@@ -267,3 +267,22 @@ img {
     border-color: #404040 !important;
   }
 }
+
+/* Social links centering */
+.social {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.social a {
+  font-size: 1.5rem;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.social a:hover {
+  color: #333;
+}
