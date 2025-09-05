@@ -1,8 +1,8 @@
 {
-  "temperature": 72.5,
-  "conditions": "Partly Cloudy",
-  "humidity": 65,
-  "windSpeed": 8,
-  "lastUpdated": "2025-01-04T20:30:00Z",
+  "temperature": 73,
+  "conditions": "Unknown",
+  "humidity": 75,
+  "windSpeed": 0,
+  "lastUpdated": "2025-09-05T04:19:29Z",
   "stationId": "KORMOUNT70"
 }
