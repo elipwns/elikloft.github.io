@@ -1,0 +1,59 @@
+name: Update Weather Data
+
+on:
+  schedule:
+    # Run every hour at minute 0
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-weather:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Fetch weather data
+      env:
+        WU_API_KEY: ${{ secrets.WU_API_KEY }}
+      run: |
+        # Fetch weather data from Weather Underground
+        RESPONSE=$(curl -s "https://api.weather.com/v2/pws/observations/current?stationId=KORMOUNT70&format=json&units=e&apiKey=${WU_API_KEY}")
+        
+        # Extract data using jq
+        TEMP=$(echo $RESPONSE | jq -r '.observations[0].imperial.temp // "N/A"')
+        CONDITIONS=$(echo $RESPONSE | jq -r '.observations[0].wxPhraseLong // "Unknown"')
+        HUMIDITY=$(echo $RESPONSE | jq -r '.observations[0].humidity // "N/A"')
+        WIND_SPEED=$(echo $RESPONSE | jq -r '.observations[0].imperial.windSpeed // "N/A"')
+        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        
+        # Create JSON file
+        cat > weather.json << EOF
+        {
+          "temperature": ${TEMP},
+          "conditions": "${CONDITIONS}",
+          "humidity": ${HUMIDITY},
+          "windSpeed": ${WIND_SPEED},
+          "lastUpdated": "${TIMESTAMP}",
+          "stationId": "KORMOUNT70"
+        }
+        EOF
+        
+    - name: Check for changes
+      id: changes
+      run: |
+        if git diff --quiet weather.json; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Commit and push changes
+      if: steps.changes.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add weather.json
+        git commit -m "Update weather data - $(date)"
+        git push

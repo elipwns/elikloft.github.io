@@ -11,12 +11,15 @@ Clean, minimal personal portfolio showcasing:
 - Automotive projects and racing
 - Software development work
 - Contact information and social links
+- Live weather data from local Weather Underground station
 
 ## Tech Stack
 - **Hosting**: GitHub Pages
 - **DNS**: CloudFlare
 - **Styling**: Bootstrap 4 + Custom CSS
 - **Icons**: Font Awesome
+- **Weather Data**: Weather Underground API via GitHub Actions
+- **Dark Mode**: CSS `prefers-color-scheme` detection
 
 ## Local Development
 1. Clone the repository

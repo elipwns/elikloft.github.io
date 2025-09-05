@@ -47,6 +47,11 @@
   
   <div class="description">Automotive engineer, racing enthusiast, and software developer. Building systems that move fast and break... less often.</div>
   
+  <div id="weather-widget" class="weather-widget" style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 8px; display: inline-block;">
+    <i class="fas fa-thermometer-half" style="margin-right: 0.5rem;"></i>
+    <span id="weather-info">Loading local weather...</span>
+  </div>
+  
 </section>
 
 <section id="services-pane" class="text-center services" style="margin-top: 2rem;">
@@ -121,5 +126,26 @@ if (!doNotTrack) {
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="js/main.js"></script>
 <script src="js/custom.js"></script> -->
+<script>
+// Load weather data
+fetch('weather.json')
+  .then(response => response.json())
+  .then(data => {
+    const temp = Math.round(data.temperature);
+    const conditions = data.conditions;
+    const lastUpdated = new Date(data.lastUpdated).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+    
+    document.getElementById('weather-info').innerHTML = `
+      ${temp}°F - ${conditions} <small style="opacity: 0.7;">(${lastUpdated})</small>
+    `;
+  })
+  .catch(error => {
+    document.getElementById('weather-info').textContent = 'Weather unavailable';
+  });
+</script>
+
 </body>
 </html>
