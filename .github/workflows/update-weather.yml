@@ -26,10 +26,28 @@ jobs:
         
         # Extract data using jq
         TEMP=$(echo $RESPONSE | jq -r '.observations[0].imperial.temp // "N/A"')
-        CONDITIONS=$(echo $RESPONSE | jq -r '.observations[0].wxPhraseLong // "Unknown"')
         HUMIDITY=$(echo $RESPONSE | jq -r '.observations[0].humidity // "N/A"')
         WIND_SPEED=$(echo $RESPONSE | jq -r '.observations[0].imperial.windSpeed // "N/A"')
+        SOLAR_RADIATION=$(echo $RESPONSE | jq -r '.observations[0].solarRadiation // 0')
+        UV=$(echo $RESPONSE | jq -r '.observations[0].uv // 0')
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        
+        # Try to get conditions, or generate smart conditions
+        CONDITIONS=$(echo $RESPONSE | jq -r '.observations[0].wxPhraseLong // .observations[0].wxPhrase // .observations[0].conditions // null')
+        
+        if [ "$CONDITIONS" = "null" ] || [ -z "$CONDITIONS" ]; then
+          # Generate conditions based on available data
+          HOUR=$(date +%H)
+          if [ "$SOLAR_RADIATION" -gt "500" ]; then
+            CONDITIONS="Sunny"
+          elif [ "$SOLAR_RADIATION" -gt "200" ]; then
+            CONDITIONS="Partly Cloudy"
+          elif [ "$HOUR" -ge "20" ] || [ "$HOUR" -le "6" ]; then
+            CONDITIONS="Clear Night"
+          else
+            CONDITIONS="Overcast"
+          fi
+        fi
         
         # Create JSON file
         cat > weather.json << EOF
@@ -38,6 +56,8 @@ jobs:
           "conditions": "${CONDITIONS}",
           "humidity": ${HUMIDITY},
           "windSpeed": ${WIND_SPEED},
+          "solarRadiation": ${SOLAR_RADIATION},
+          "uv": ${UV},
           "lastUpdated": "${TIMESTAMP}",
           "stationId": "KORMOUNT70"
         }
