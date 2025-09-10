@@ -1,10 +1,10 @@
 {
-  "temperature": 69,
+  "temperature": 72,
   "conditions": "Clear Night",
-  "humidity": 71,
-  "windSpeed": 2,
-  "solarRadiation": 227.1,
-  "uv": 2.4,
-  "lastUpdated": "2025-09-10T21:15:20Z",
+  "humidity": 67,
+  "windSpeed": 5,
+  "solarRadiation": 313.6,
+  "uv": 2.9,
+  "lastUpdated": "2025-09-10T22:16:14Z",
   "stationId": "KORMOUNT70"
 }
