@@ -1,10 +1,10 @@
 {
-  "temperature": 47,
+  "temperature": 50,
   "conditions": "Overcast",
-  "humidity": 99,
+  "humidity": 96,
   "windSpeed": 0,
-  "solarRadiation": 21.3,
-  "uv": 0.0,
-  "lastUpdated": "2025-11-07T15:19:18Z",
+  "solarRadiation": 81.4,
+  "uv": 0.6,
+  "lastUpdated": "2025-11-07T16:19:54Z",
   "stationId": "KORMOUNT70"
 }
