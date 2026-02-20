@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoRa Timing System - Live Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏁 LoRa Timing System</h1>
+            <p class="subtitle">Universal Motorsports Timing via LoRa Radio</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">Connection:</span>
+                <span id="connection-status" class="status-value disconnected">Disconnected</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Total Runs:</span>
+                <span id="total-runs" class="status-value">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Best Time:</span>
+                <span id="best-time" class="status-value">--</span>
+            </div>
+        </div>
+
+        <div class="current-run">
+            <div class="run-status" id="run-status">Waiting for start...</div>
+            <div class="current-time" id="current-time">--</div>
+        </div>
+
+        <div class="leaderboard">
+            <h2>Recent Runs</h2>
+            <table id="runs-table">
+                <thead>
+                    <tr>
+                        <th>Run #</th>
+                        <th>Time</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="runs-tbody">
+                    <tr class="no-data">
+                        <td colspan="3">No runs yet. Press START button to begin.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="demo-controls">
+            <h3>Demo Mode</h3>
+            <p>No WebSocket server? Use demo mode to simulate timing data.</p>
+            <button id="demo-start" class="demo-btn">Simulate START</button>
+            <button id="demo-finish" class="demo-btn">Simulate FINISH</button>
+        </div>
+
+        <footer>
+            <p>Built with LoRa radio (905.2 MHz) • Heltec ESP32 boards • <a href="https://github.com/elipwns">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
