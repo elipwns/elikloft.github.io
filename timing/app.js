@@ -25,21 +25,27 @@ class TimingDashboard {
     }
     
     initWebSocket() {
-        // Try to connect to local WebSocket server
-        // Change this URL to match your server
-        const wsUrl = 'ws://localhost:8765';
+        // AWS WebSocket API Gateway endpoint
+        const wsUrl = 'wss://v5rvshh3g7.execute-api.us-west-2.amazonaws.com/prod';
         
         try {
             this.ws = new WebSocket(wsUrl);
             
             this.ws.onopen = () => {
-                console.log('WebSocket connected');
+                console.log('Connected to AWS WebSocket');
                 this.updateConnectionStatus(true);
                 this.reconnectAttempts = 0;
             };
             
             this.ws.onmessage = (event) => {
-                this.handleMessage(event.data);
+                const data = JSON.parse(event.data);
+                console.log('Received from AWS:', data);
+                
+                if (data.event === 'START') {
+                    this.handleStart(data.run);
+                } else if (data.event === 'RESULT') {
+                    this.handleFinish(data.run, data.time);
+                }
             };
             
             this.ws.onerror = (error) => {
@@ -65,21 +71,7 @@ class TimingDashboard {
         }
     }
     
-    handleMessage(data) {
-        console.log('Received:', data);
-        
-        // Parse messages from Arduino
-        // Format: "START:1" or "RESULT:1:2.345"
-        if (data.startsWith('START:')) {
-            const runNumber = parseInt(data.split(':')[1]);
-            this.handleStart(runNumber);
-        } else if (data.startsWith('RESULT:')) {
-            const parts = data.split(':');
-            const runNumber = parseInt(parts[1]);
-            const time = parseFloat(parts[2]);
-            this.handleFinish(runNumber, time);
-        }
-    }
+
     
     handleStart(runNumber) {
         this.currentRun = runNumber;
