@@ -140,24 +140,59 @@ if (!doNotTrack) {
 <script src="js/main.js"></script>
 <script src="js/custom.js"></script> -->
 <script>
-// Load weather data
+// Load weather data with localStorage cache fallback
+const WEATHER_CACHE_KEY = 'weather_last_known';
+
+function isValidWeather(data) {
+  const temp = Number(data.temperature);
+  return data && !isNaN(temp) && data.temperature !== null && data.temperature !== '';
+}
+
+function formatWeatherAge(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+    ' at ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function showWeather(data, fromCache) {
+  const temp = Math.round(Number(data.temperature));
+  const conditions = data.conditions || 'Unknown';
+  const el = document.getElementById('weather-info');
+  if (fromCache) {
+    el.innerHTML = `${temp}°F - ${conditions} <small style="opacity: 0.7;">(last known: ${formatWeatherAge(data.lastUpdated)})</small>`;
+  } else {
+    const time = new Date(data.lastUpdated).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    el.innerHTML = `${temp}°F - ${conditions} <small style="opacity: 0.7;">(${time})</small>`;
+    try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+}
+
+function showCachedOrFallback() {
+  try {
+    const cached = localStorage.getItem(WEATHER_CACHE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      if (isValidWeather(data)) { showWeather(data, true); return; }
+    }
+  } catch (e) {}
+  document.getElementById('weather-info').textContent = 'Weather station offline';
+}
+
 fetch('weather.json')
-  .then(response => response.json())
-  .then(data => {
-    const temp = Math.round(data.temperature);
-    const conditions = data.conditions;
-    const lastUpdated = new Date(data.lastUpdated).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit'
-    });
-    
-    document.getElementById('weather-info').innerHTML = `
-      ${temp}°F - ${conditions} <small style="opacity: 0.7;">(${lastUpdated})</small>
-    `;
+  .then(response => response.text())
+  .then(text => {
+    try {
+      const data = JSON.parse(text);
+      if (isValidWeather(data)) {
+        showWeather(data, false);
+      } else {
+        showCachedOrFallback();
+      }
+    } catch (e) {
+      showCachedOrFallback();
+    }
   })
-  .catch(error => {
-    document.getElementById('weather-info').textContent = 'Weather unavailable';
-  });
+  .catch(() => showCachedOrFallback());
 </script>
 
 </body>
