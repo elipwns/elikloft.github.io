@@ -22,7 +22,7 @@ jobs:
         WU_API_KEY: ${{ secrets.WU_API_KEY }}
       run: |
         # Fetch weather data from Weather Underground
-        RESPONSE=$(curl -s "https://api.weather.com/v2/pws/observations/current?stationId=KORMOUNT70&format=json&units=e&apiKey=${WU_API_KEY}")
+        RESPONSE=$(curl -s --retry 3 --retry-delay 5 "https://api.weather.com/v2/pws/observations/current?stationId=KORMOUNT70&format=json&units=e&apiKey=${WU_API_KEY}")
         
         # Extract data using jq
         TEMP=$(echo $RESPONSE | jq -r '.observations[0].imperial.temp // "N/A"')
