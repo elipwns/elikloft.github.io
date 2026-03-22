@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Race Telemetry — Portland International Raceway</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <a href="/" class="back-link">← elikloft.com</a>
+      <h1>Race Telemetry</h1>
+      <span class="track-name">Portland International Raceway</span>
+    </div>
+    <div class="header-right">
+      <span id="connection-status" class="badge disconnected">Demo Mode</span>
+      <button id="live-btn" class="live-btn">Connect Live</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="map-panel">
+      <div id="map"></div>
+    </div>
+
+    <aside id="data-panel">
+      <div class="data-card accent-blue">
+        <div class="card-label">Speed</div>
+        <div class="card-value" id="speed">0</div>
+        <div class="card-unit">kph</div>
+      </div>
+
+      <div class="data-card accent-green">
+        <div class="card-label">Lap Time</div>
+        <div class="card-value" id="lap-time">—</div>
+        <div class="card-unit" id="lap-sub">lap <span id="lap-count">1</span></div>
+      </div>
+
+      <div class="data-card accent-yellow">
+        <div class="card-label">Best Lap</div>
+        <div class="card-value" id="best-lap">—</div>
+        <div class="card-unit">min:sec</div>
+      </div>
+
+      <div class="data-card">
+        <div class="card-label">GPS</div>
+        <div class="card-value" id="satellites">—</div>
+        <div class="card-unit">satellites</div>
+      </div>
+
+      <div class="data-card weather-card">
+        <div class="card-label">Weather · Portland</div>
+        <div class="weather-row">
+          <span class="weather-val" id="temp">—</span>
+          <span class="weather-unit">°C</span>
+          <span class="weather-val" id="humidity" style="margin-left:1rem">—</span>
+          <span class="weather-unit">%</span>
+        </div>
+        <div class="weather-pressure" id="pressure">— hPa</div>
+      </div>
+
+      <div class="data-card">
+        <div class="card-label">Session</div>
+        <div class="card-value session-id" id="session-id">DEMO</div>
+        <div class="card-unit" id="session-time">0:00</div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

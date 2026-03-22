@@ -1,0 +1,175 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.back-link {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  transition: color .2s;
+}
+.back-link:hover { color: #58a6ff; }
+
+header h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #58a6ff;
+}
+
+.track-name {
+  font-size: 0.75rem;
+  color: #8b949e;
+  letter-spacing: 0.04em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 10px;
+}
+.badge.connected    { background: #1a3a2a; color: #3fb950; border: 1px solid #3fb950; }
+.badge.disconnected { background: #2d1f0e; color: #d29922; border: 1px solid #d29922; }
+
+.live-btn {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  font-size: 0.75rem;
+  font-family: 'Roboto', sans-serif;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.live-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+.live-btn.active { border-color: #f85149; color: #f85149; }
+
+/* ── Main layout ─────────────────────────────────────────── */
+main {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  flex: 1;
+  min-height: 0;
+}
+
+#map-panel { position: relative; min-height: 0; }
+#map { width: 100%; height: 100%; }
+
+/* ── Data panel ──────────────────────────────────────────── */
+#data-panel {
+  display: flex;
+  flex-direction: column;
+  background: #161b22;
+  border-left: 1px solid #30363d;
+  overflow-y: auto;
+}
+
+.data-card {
+  padding: 14px 16px;
+  border-bottom: 1px solid #21262d;
+  flex: 1;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8b949e;
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Roboto Mono', monospace;
+  line-height: 1;
+  color: #e6edf3;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-unit {
+  font-size: 0.7rem;
+  color: #8b949e;
+  margin-top: 3px;
+}
+
+.accent-blue  .card-value { color: #58a6ff; }
+.accent-green .card-value { color: #3fb950; }
+.accent-yellow .card-value { font-size: 1.6rem; color: #d29922; }
+
+.session-id { font-size: 1.4rem; letter-spacing: 0.1em; }
+
+/* ── Weather card ────────────────────────────────────────── */
+.weather-card { flex: 1.4; }
+.weather-row { display: flex; align-items: baseline; margin: 4px 0 3px; }
+.weather-val { font-size: 1.5rem; font-weight: 700; font-family: 'Roboto Mono', monospace; color: #e6edf3; }
+.weather-unit { font-size: 0.75rem; color: #8b949e; margin-left: 2px; }
+.weather-pressure { font-size: 0.72rem; color: #8b949e; }
+
+/* ── Leaflet car dot ─────────────────────────────────────── */
+.car-dot {
+  width: 12px;
+  height: 12px;
+  background: #f78166;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(247, 129, 102, 0.8);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  body { overflow: auto; }
+  main { grid-template-columns: 1fr; grid-template-rows: 55vw auto; }
+  #map { height: 55vw; }
+  #data-panel {
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-left: none;
+    border-top: 1px solid #30363d;
+    overflow: visible;
+  }
+  .data-card { min-width: 50%; flex: none; }
+  .weather-card { min-width: 100%; }
+}
