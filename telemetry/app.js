@@ -8,9 +8,7 @@ const KPH_TO_MPH = 0.621371;
 
 // Portland International Raceway — GPS centerline from OpenStreetMap
 // OSM way IDs: 5529392, 1184207349, 1315957509
-// Back-straight gap filled using pit-road way (118127468) nodes.
-// S/F reference: 45.595, -122.694 (TrackAddict)
-// 91 nodes, starts near S/F, runs clockwise.
+// S/F reference: 45.595, -122.694 (TrackAddict). 88 nodes, clockwise.
 const PIR = [
   // S/F area → connector (way 5529392 nodes 31–36)
   [45.5950254, -122.6945231],
@@ -74,7 +72,7 @@ const PIR = [
   [45.5989690, -122.6941790],
   [45.5986980, -122.6936530],
   [45.5985130, -122.6933600],
-  // Main straight → T1 complex (way 5529392 nodes 1–29)
+  // Main straight → T1 complex → back straight (way 5529392 nodes 1–30)
   [45.5980270, -122.6926670],
   [45.5977270, -122.6922650],
   [45.5973540, -122.6918070],
@@ -101,17 +99,12 @@ const PIR = [
   [45.5936360, -122.6887040],
   [45.5936584, -122.6888623],
   [45.5937340, -122.6893977],
-  // Back straight — gap filled from pit-road way 118127468
   [45.5938266, -122.6899558],
   [45.5939500, -122.6904270],
-  [45.5939923, -122.6901589],
-  [45.5942250, -122.6909708],
-  [45.5947449, -122.6929182],
-  // Reconnect way 5529392 node 30
   [45.5946322, -122.6930642],
 ];
 
-// Speed in kph at each waypoint (displayed as mph). 91 entries.
+// Speed in kph at each waypoint (displayed as mph). 88 entries.
 const PIR_SPEED_KPH = [
   // S/F → connector (0–6)
   128, 115, 102, 90, 85, 82, 82,
@@ -130,9 +123,9 @@ const PIR_SPEED_KPH = [
   155, 158, 155, 148, 120,
   // T1 braking and apex (63–71)
   95, 88, 82, 76, 70, 66, 64, 63, 63,
-  // T1 exit → back straight with gap fill (72–90)
-  65, 68, 70, 70, 72, 74, 76, 78, 79,
-  80, 82, 83, 85, 88, 90, 93, 96, 99, 102,
+  // T1 exit → back straight (72–87)
+  65, 68, 70, 70, 72, 74, 76, 78,
+  80, 82, 83, 85, 88, 90, 99, 105,
 ];
 // Portland spring demo weather
 const DEMO_WEATHER = { tempF: 61, humidity: 62, pressure: 1012 };
