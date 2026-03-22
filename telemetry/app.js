@@ -2,7 +2,7 @@
 // Demo: animated car around Portland International Raceway
 // Live: connects to AWS WebSocket (update WEBSOCKET_URL after terraform apply)
 
-const WEBSOCKET_URL = 'wss://REPLACE_ME.execute-api.us-west-2.amazonaws.com/prod';
+const WEBSOCKET_URL = 'wss://lk95mc2bo4.execute-api.us-west-2.amazonaws.com/prod';
 
 const KPH_TO_MPH = 0.621371;
 
