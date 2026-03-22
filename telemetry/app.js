@@ -6,13 +6,13 @@ const WEBSOCKET_URL = 'wss://REPLACE_ME.execute-api.us-west-2.amazonaws.com/prod
 
 const KPH_TO_MPH = 0.621371;
 
-// Portland International Raceway — real GPS centerline from OpenStreetMap
+// Portland International Raceway — GPS centerline from OpenStreetMap
 // OSM way IDs: 5529392, 1184207349, 1315957509
+// Back-straight gap filled using pit-road way (118127468) nodes.
 // S/F reference: 45.595, -122.694 (TrackAddict)
-// Address: 1940 N Victory Blvd, Portland OR 97217
-// Array starts near S/F, runs clockwise.
+// 91 nodes, starts near S/F, runs clockwise.
 const PIR = [
-  // S/F area → chicane → connector (way 5529392, from midpoint)
+  // S/F area → connector (way 5529392 nodes 31–36)
   [45.5950254, -122.6945231],
   [45.5950478, -122.6946062],
   [45.5954080, -122.6959840],
@@ -21,7 +21,7 @@ const PIR = [
   [45.5959808, -122.6981651],
   // Connector (way 1184207349)
   [45.5964368, -122.6998466],
-  // Carousel loop (way 1315957509, nodes 1–48)
+  // Carousel loop (way 1315957509 all 52 nodes)
   [45.5970240, -122.7020120],
   [45.5971360, -122.7024030],
   [45.5972290, -122.7026650],
@@ -45,22 +45,24 @@ const PIR = [
   [45.5981330, -122.7008670],
   [45.5980410, -122.7007290],
   [45.5979520, -122.7004950],
+  [45.5979270, -122.7003080],
+  [45.5979360, -122.7001450],
   [45.5979740, -122.6999900],
   [45.5980600, -122.6998140],
   [45.5981960, -122.6996700],
   [45.5983190, -122.6995920],
   [45.5986470, -122.6994780],
   [45.5990770, -122.6994710],
-  [45.5997190, -122.6995090],
   [45.5996040, -122.6995230],
+  [45.5997190, -122.6995090],
   [45.5998530, -122.6994420],
   [45.5999210, -122.6993630],
   [45.5999530, -122.6992890],
   [45.5999720, -122.6991530],
   [45.5999610, -122.6990120],
   [45.5999040, -122.6987710],
-  [45.5995660, -122.6976040],
   [45.5996080, -122.6977850],
+  [45.5995660, -122.6976040],
   [45.5995230, -122.6972650],
   [45.5995071, -122.6968111],
   [45.5994790, -122.6962250],
@@ -70,9 +72,9 @@ const PIR = [
   [45.5992250, -122.6948680],
   [45.5991370, -122.6946020],
   [45.5989690, -122.6941790],
-  // Main straight → T1 complex (way 5529392, nodes 0–30)
   [45.5986980, -122.6936530],
   [45.5985130, -122.6933600],
+  // Main straight → T1 complex (way 5529392 nodes 1–29)
   [45.5980270, -122.6926670],
   [45.5977270, -122.6922650],
   [45.5973540, -122.6918070],
@@ -99,33 +101,39 @@ const PIR = [
   [45.5936360, -122.6887040],
   [45.5936584, -122.6888623],
   [45.5937340, -122.6893977],
+  // Back straight — gap filled from pit-road way 118127468
   [45.5938266, -122.6899558],
   [45.5939500, -122.6904270],
+  [45.5939923, -122.6901589],
+  [45.5942250, -122.6909708],
+  [45.5947449, -122.6929182],
+  // Reconnect way 5529392 node 30
   [45.5946322, -122.6930642],
 ];
 
-// Speed in kph at each waypoint (displayed as mph)
+// Speed in kph at each waypoint (displayed as mph). 91 entries.
 const PIR_SPEED_KPH = [
-  // S/F area → chicane → connector (indices 0–6)
-  128, 115, 102,  90,  85,  82,  82,
-  // Carousel entry (indices 7–15)
-   80,  78,  78,  78,  80,  82,  85,  88,  90,
-  // Carousel loop (indices 16–26)
-   92,  94,  95,  95,  97,  97,  95,  93,  90,  88,  85,
-  // Carousel exit → NE (indices 27–36)
-   90,  94,  98, 102, 108, 112, 115, 118, 120, 122,
-  // Main straight (indices 37–54)
-  125, 122, 125, 128, 132, 135, 137, 138, 138, 136,
-  133, 135, 137, 140, 143, 146, 148, 150,
-  // Main straight peak → T1 entry (indices 55–59)
-  150, 155, 158, 152, 135,
-  // T1 braking and apex (indices 60–68)
-  115,  90,  82,  76,  70,  65,  63,  62,  63,
-  // T1 exit, back section acceleration (indices 69–85)
-   65,  70,  74,  78,  82,  86,  90,  94,  97,
-  100, 105, 115, 125, 133, 138, 142, 140,
+  // S/F → connector (0–6)
+  128, 115, 102, 90, 85, 82, 82,
+  // Carousel entry NW (7–13)
+  78, 76, 75, 75, 76, 78, 80,
+  // Carousel apex (14–22)
+  83, 86, 88, 90, 92, 94, 95, 95, 94,
+  // Carousel top → exit (23–32)
+  93, 92, 90, 88, 88, 88, 90, 93, 95, 97,
+  // Carousel exit NE (33–42)
+  100, 103, 106, 109, 112, 115, 116, 118, 120, 122,
+  // Main straight (43–57)
+  125, 128, 130, 133, 135, 137, 138, 138, 138, 139,
+  142, 144, 146, 148, 150,
+  // Main straight peak → T1 entry (58–62)
+  155, 158, 155, 148, 120,
+  // T1 braking and apex (63–71)
+  95, 88, 82, 76, 70, 66, 64, 63, 63,
+  // T1 exit → back straight with gap fill (72–90)
+  65, 68, 70, 70, 72, 74, 76, 78, 79,
+  80, 82, 83, 85, 88, 90, 93, 96, 99, 102,
 ];
-
 // Portland spring demo weather
 const DEMO_WEATHER = { tempF: 61, humidity: 62, pressure: 1012 };
 
