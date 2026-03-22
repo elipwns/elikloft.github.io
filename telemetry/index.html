@@ -9,65 +9,113 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <header>
     <div class="header-left">
       <a href="/" class="back-link">← elikloft.com</a>
-      <h1>Race Telemetry</h1>
+      <span class="header-title">Race Telemetry</span>
       <span class="track-name">Portland International Raceway</span>
     </div>
     <div class="header-right">
-      <span id="connection-status" class="badge disconnected">Demo Mode</span>
+      <span id="connection-status" class="badge demo">Demo</span>
       <button id="live-btn" class="live-btn">Connect Live</button>
     </div>
   </header>
 
   <main>
-    <div id="map-panel">
+
+    <!-- Map — small context window -->
+    <section id="map-panel">
       <div id="map"></div>
-    </div>
+    </section>
 
-    <aside id="data-panel">
-      <div class="data-card accent-blue">
-        <div class="card-label">Speed</div>
-        <div class="card-value" id="speed">0</div>
-        <div class="card-unit">kph</div>
+    <!-- Live data — dominates the screen -->
+    <section id="data-panel">
+
+      <!-- Row 1: primary numbers -->
+      <div class="card accent-blue" id="card-speed">
+        <div class="clabel">Speed</div>
+        <div class="cval" id="speed">0</div>
+        <div class="cunit">mph</div>
       </div>
 
-      <div class="data-card accent-green">
-        <div class="card-label">Lap Time</div>
-        <div class="card-value" id="lap-time">—</div>
-        <div class="card-unit" id="lap-sub">lap <span id="lap-count">1</span></div>
+      <div class="card accent-green" id="card-lap">
+        <div class="clabel">Lap Time</div>
+        <div class="cval" id="lap-time">—</div>
+        <div class="cunit">lap <span id="lap-count">1</span></div>
       </div>
 
-      <div class="data-card accent-yellow">
-        <div class="card-label">Best Lap</div>
-        <div class="card-value" id="best-lap">—</div>
-        <div class="card-unit">min:sec</div>
+      <div class="card accent-yellow" id="card-best">
+        <div class="clabel">Best Lap</div>
+        <div class="cval" id="best-lap">—</div>
+        <div class="cunit">min:sec</div>
       </div>
 
-      <div class="data-card">
-        <div class="card-label">GPS</div>
-        <div class="card-value" id="satellites">—</div>
-        <div class="card-unit">satellites</div>
+      <!-- Row 2: context -->
+      <div class="card" id="card-gps">
+        <div class="clabel">GPS</div>
+        <div class="cval" id="satellites">—</div>
+        <div class="cunit">satellites</div>
       </div>
 
-      <div class="data-card weather-card">
-        <div class="card-label">Weather · Portland</div>
+      <div class="card weather-card" id="card-weather">
+        <div class="clabel">Weather · Portland</div>
         <div class="weather-row">
-          <span class="weather-val" id="temp">—</span>
-          <span class="weather-unit">°C</span>
-          <span class="weather-val" id="humidity" style="margin-left:1rem">—</span>
-          <span class="weather-unit">%</span>
+          <span class="cval sm" id="temp">—</span><span class="cunit">°F &nbsp;</span>
+          <span class="cval sm" id="humidity">—</span><span class="cunit">%</span>
         </div>
-        <div class="weather-pressure" id="pressure">— hPa</div>
+        <div class="cunit" id="pressure">— hPa</div>
       </div>
 
-      <div class="data-card">
-        <div class="card-label">Session</div>
-        <div class="card-value session-id" id="session-id">DEMO</div>
-        <div class="card-unit" id="session-time">0:00</div>
+      <div class="card" id="card-session">
+        <div class="clabel">Session</div>
+        <div class="cval sm" id="session-id">DEMO</div>
+        <div class="cunit" id="session-time">0:00</div>
       </div>
-    </aside>
+
+      <!-- Row 3: Phase 3 placeholders -->
+      <div class="card placeholder">
+        <div class="clabel">Throttle</div>
+        <div class="cval ph">—</div>
+        <div class="cunit ph-label">· Phase 3</div>
+      </div>
+
+      <div class="card placeholder">
+        <div class="clabel">Brake</div>
+        <div class="cval ph">—</div>
+        <div class="cunit ph-label">· Phase 3</div>
+      </div>
+
+      <div class="card placeholder">
+        <div class="clabel">Steering</div>
+        <div class="cval ph">—</div>
+        <div class="cunit ph-label">· Phase 3</div>
+      </div>
+
+      <!-- Row 4: Phase 4 placeholders -->
+      <div class="card placeholder tire-grid">
+        <div class="clabel">Tire Temps</div>
+        <div class="tire-layout">
+          <span class="tire">FL<br>—</span>
+          <span class="tire">FR<br>—</span>
+          <span class="tire">RL<br>—</span>
+          <span class="tire">RR<br>—</span>
+        </div>
+        <div class="cunit ph-label">· Phase 4</div>
+      </div>
+
+      <div class="card placeholder" style="grid-column: span 2;">
+        <div class="clabel">Suspension Travel</div>
+        <div class="tire-layout">
+          <span class="tire">FL<br>—</span>
+          <span class="tire">FR<br>—</span>
+          <span class="tire">RL<br>—</span>
+          <span class="tire">RR<br>—</span>
+        </div>
+        <div class="cunit ph-label">· Phase 4</div>
+      </div>
+
+    </section>
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
