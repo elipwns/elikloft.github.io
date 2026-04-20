@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>401k Buy Timing | elikloft</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Roboto+Slab:wght@300;400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <a href="/" class="back-link">← elikloft.com</a>
+      <span class="header-sep">|</span>
+      <span class="header-title">401k Buy Timing</span>
+    </div>
+    <div class="header-right">
+      <span id="status-dot" class="status-dot loading"></span>
+      <span id="status-text" class="status-text">Loading…</span>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="intro-section">
+      <p class="intro-text">
+        Semi-monthly 401k contributions auto-buy on a fixed payroll schedule — no choice in timing.
+        The question: do those buy dates systematically land when the market is <em>locally high</em>?
+        Each contribution date's SPY price is compared to the average of the surrounding
+        <span id="window-label">14</span> trading days (7 before + 7 after).
+        In a fair, efficient market with random timing you'd expect ~50% above and ~50% below — and the
+        deviations would cancel out. Do they?
+      </p>
+      <div class="window-control">
+        <label for="window-select">Window:</label>
+        <select id="window-select">
+          <option value="5">±5 trading days (~1 week)</option>
+          <option value="7" selected>±7 trading days (~1.5 weeks)</option>
+          <option value="10">±10 trading days (~2 weeks)</option>
+          <option value="21">±21 trading days (~1 month)</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Stats row -->
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Avg Deviation</div>
+        <div class="stat-value" id="stat-avg-dev">—</div>
+        <div class="stat-sub">vs window avg</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bought High</div>
+        <div class="stat-value red" id="stat-pct-high">—</div>
+        <div class="stat-sub">of contributions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bought Low</div>
+        <div class="stat-value green" id="stat-pct-low">—</div>
+        <div class="stat-sub">of contributions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Since Jan 2025</div>
+        <div class="stat-value" id="stat-recent">—</div>
+        <div class="stat-sub">avg deviation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">High-Buy Avg</div>
+        <div class="stat-value red" id="stat-high-mag">—</div>
+        <div class="stat-sub">when high, how high</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Low-Buy Avg</div>
+        <div class="stat-value green" id="stat-low-mag">—</div>
+        <div class="stat-sub">when low, how low</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Statistical Sig.</div>
+        <div class="stat-value" id="stat-sig">—</div>
+        <div class="stat-sub" id="stat-sig-sub">z-score / p-value</div>
+      </div>
+    </section>
+
+    <!-- Chart 1: SPY line + scatter -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">SPY Price + Contribution Dates</h2>
+        <div class="legend">
+          <span class="legend-item"><span class="dot red"></span> Bought high</span>
+          <span class="legend-item"><span class="dot green"></span> Bought low</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="main-chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Chart 2: deviation bars -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">Deviation per Contribution (% vs window avg)</h2>
+        <div class="filter-row">
+          <label>
+            <input type="checkbox" id="toggle-trump" checked>
+            Highlight Trump 2nd term (Jan 2025+)
+          </label>
+        </div>
+      </div>
+      <div class="chart-wrap deviation-wrap">
+        <canvas id="dev-chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Chart 3: rolling 12-month average -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">Rolling 12-Month Average Deviation</h2>
+        <p class="chart-subtitle">Is the timing bias getting worse over time?</p>
+      </div>
+      <div class="chart-wrap rolling-wrap">
+        <canvas id="rolling-chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Charts 4 + 5 side by side -->
+    <section class="chart-section two-col">
+      <div class="chart-half">
+        <div class="chart-header">
+          <h2 class="chart-title">Distribution of Deviations</h2>
+          <p class="chart-subtitle">Shape of the spread — symmetric or skewed?</p>
+        </div>
+        <div class="chart-wrap hist-wrap">
+          <canvas id="hist-chart"></canvas>
+        </div>
+      </div>
+      <div class="chart-half">
+        <div class="chart-header">
+          <h2 class="chart-title">Paycheck Timing Breakdown</h2>
+          <p class="chart-subtitle">Mid-month vs end-of-month — one worse than the other?</p>
+        </div>
+        <div class="chart-wrap cal-wrap">
+          <canvas id="cal-chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data table -->
+    <section class="table-section">
+      <details>
+        <summary>All contribution dates <span id="table-count"></span></summary>
+        <div class="table-wrap">
+          <table id="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>SPY Close</th>
+                <th>Window Avg</th>
+                <th>Deviation</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <div id="error-banner" class="error-banner hidden">
+      <strong>Could not load SPY data.</strong>
+      Run the GitHub Actions workflow manually to generate <code>spy-data.json</code>.
+      <button onclick="document.getElementById('error-banner').classList.add('hidden')">✕</button>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
