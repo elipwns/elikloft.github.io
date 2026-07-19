@@ -37,6 +37,8 @@ jobs:
         
         if [ "$CONDITIONS" = "null" ] || [ -z "$CONDITIONS" ]; then
           # Generate conditions based on available data
+          # (truncate to integer — bash -gt can't compare floats like 773.4)
+          SOLAR_RADIATION=${SOLAR_RADIATION%.*}
           HOUR=$(date +%H)
           if [ "$SOLAR_RADIATION" -gt "500" ]; then
             CONDITIONS="Sunny"
