@@ -28,8 +28,11 @@ Clean, minimal personal portfolio showcasing:
 
 ## Services
 - **Main Site**: [elikloft.com](https://elikloft.com)
+- **Vapor Engineering**: [vapor.engineering](https://vapor.engineering) (team LLC)
 - **Media Requests**: [requests.elikloft.com](https://requests.elikloft.com) (Family Overseerr)
-- **Trading Dashboard**: [trading.elikloft.com](https://trading.elikloft.com)
+- **LoRa Timing System**: [elikloft.com/timing](https://elikloft.com/timing)
+- **Race Telemetry**: [elikloft.com/telemetry](https://elikloft.com/telemetry)
+- **401k Buy Timing**: [elikloft.com/401k](https://elikloft.com/401k)
 
 ## Updates
 Website automatically deploys when changes are pushed to the main branch.
