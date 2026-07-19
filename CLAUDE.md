@@ -9,11 +9,9 @@ Personal website (elikloft.com), hosted on GitHub Pages. Plain HTML/CSS/JS — n
 - `401k/` — SPY buy-timing analysis (`spy-data.json` is the dataset)
 - `telemetry/` — race telemetry demo (Portland International Raceway)
 - `timing/` — LoRa drag-strip timing system UI
-- `weather.json` — local weather station data
-
 ## Things to know
-- A GitHub Action commits `weather.json` to `main` hourly, so `main` moves constantly — always `git fetch` and branch from fresh `origin/main`; local refs go stale fast.
-- `401k/spy-data.json` is updated manually (the auto-update workflow was removed). Regenerate with the Yahoo Finance chart API script — see git history of `.github/workflows/update-spy.yml` (removed in 2621b41) for the reference implementation. Format: `[["YYYY-MM-DD", adjClose], ...]` from 2019-01-01, compact JSON.
+- Weather data: a GitHub Action fetches from Weather Underground hourly and force-pushes a single-commit `weather-data` branch; the homepage fetches `weather.json` from that branch's raw.githubusercontent.com URL. It is deliberately not committed to `main` (keeps history clean, avoids hourly Pages rebuilds).
+- `401k/spy-data.json` is intentionally frozen — the page answered a one-time question and the data isn't maintained (last refreshed 2026-07-17).
 - Styling on the homepage is mostly inline `style=` attributes; match that pattern for small additions rather than growing `mystyle.css`.
 
 ## Local preview

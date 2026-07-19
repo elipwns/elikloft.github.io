@@ -63,20 +63,14 @@ jobs:
         }
         EOF
         
-    - name: Check for changes
-      id: changes
-      run: |
-        if git diff --quiet weather.json; then
-          echo "changed=false" >> $GITHUB_OUTPUT
-        else
-          echo "changed=true" >> $GITHUB_OUTPUT
-        fi
-        
-    - name: Commit and push changes
-      if: steps.changes.outputs.changed == 'true'
+    - name: Publish to weather-data branch
+      # Single-commit data branch keeps main history clean and avoids
+      # triggering a Pages rebuild every hour
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add weather.json
+        git checkout --orphan weather-data
+        git reset
+        git add -f weather.json
         git commit -m "Update weather data - $(date)"
-        git push
+        git push -f origin weather-data
