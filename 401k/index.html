@@ -30,11 +30,12 @@
     <section class="intro-section">
       <p class="intro-text">
         Semi-monthly 401k contributions auto-buy on a fixed payroll schedule — no choice in timing.
-        The question: do those buy dates systematically land when the market is <em>locally high</em>?
-        Each contribution date's SPY price is compared to the average of the surrounding
-        <span id="window-label">14</span> trading days (7 before + 7 after).
-        In a fair, efficient market with random timing you'd expect ~50% above and ~50% below — and the
-        deviations would cancel out. Do they?
+        Do those buy dates systematically land when the market is <em>locally high</em>?
+        Each contribution's SPY price is compared to the average of the surrounding
+        <span id="window-label">14</span> trading days.
+        One catch: even a <em>random</em> day sits above its local average about
+        <span id="baseline-label">55</span>% of the time, because markets grind up slowly and drop
+        sharply. So contributions are judged against that baseline — not 50%.
       </p>
       <div class="window-control">
         <label for="window-select">Window:</label>
@@ -47,6 +48,11 @@
       </div>
     </section>
 
+    <!-- Verdict -->
+    <section class="verdict-box" id="verdict-box">
+      <p id="verdict-text">Crunching the numbers…</p>
+    </section>
+
     <!-- Stats row -->
     <section class="stats-row">
       <div class="stat-card">
@@ -57,7 +63,7 @@
       <div class="stat-card">
         <div class="stat-label">Bought High</div>
         <div class="stat-value red" id="stat-pct-high">—</div>
-        <div class="stat-sub">of contributions</div>
+        <div class="stat-sub" id="stat-pct-high-sub">of contributions</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Bought Low</div>

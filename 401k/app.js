@@ -172,11 +172,25 @@ function analyze(entries, N) {
   return results;
 }
 
-// ── Dollar significance (z-test for proportion vs 50%) ───────────────────
-function zTest(data) {
+// ── Baseline: share of ALL trading days sitting above their window avg ────
+// Markets climb slowly and crash fast, so a random day is above its local
+// average >50% of the time. That, not 50%, is the fair null hypothesis.
+function computeBaseline(entries, N) {
+  const first = CONTRIBUTION_DATES[0];
+  let high = 0, n = 0;
+  for (let i = N; i < entries.length - N; i++) {
+    if (entries[i].date < first) continue;
+    if (entries[i].price > windowAvg(i, entries, N)) high++;
+    n++;
+  }
+  return high / n;
+}
+
+// ── Significance (z-test for proportion vs the all-days baseline) ─────────
+function zTest(data, p0) {
   const n    = data.length;
   const p    = data.filter(d => d.deviation > 0).length / n;
-  const z    = (p - 0.5) / Math.sqrt(0.25 / n);
+  const z    = (p - p0) / Math.sqrt(p0 * (1 - p0) / n);
   // two-tailed p-value approximation
   const pval = 2 * (1 - normalCDF(Math.abs(z)));
   return { z, pval };
@@ -220,16 +234,15 @@ function computeHistogram(data) {
 // ── Calendar grouping (by day-of-month) ──────────────────────────────────
 function computeCalendar(data) {
   const groups = [
-    { label: 'Mid-month\n(days 12–16)', days: d => d >= 12 && d <= 16, devs: [], amounts: 0 },
-    { label: 'End-of-month\n(days 27–31)', days: d => d >= 27,         devs: [], amounts: 0 },
-    { label: 'Other\n(catch-up / misc)', days: () => true,             devs: [], amounts: 0 },
+    { label: 'Mid-month\n(days 12–16)', days: d => d >= 12 && d <= 16, devs: [] },
+    { label: 'End-of-month\n(days 27–31)', days: d => d >= 27,         devs: [] },
+    { label: 'Other\n(catch-up / misc)', days: () => true,             devs: [] },
   ];
 
   for (const d of data) {
     const day = new Date(d.date + 'T12:00:00Z').getUTCDate();
     const g   = groups.find(g => g.days(day)) ?? groups[2];
     g.devs.push(d.deviation);
-    g.amounts += d.amount;
   }
 
   return groups
@@ -245,7 +258,7 @@ function computeCalendar(data) {
 // ── Stat cards ────────────────────────────────────────────────────────────
 function fmtPct(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + '%'; }
 
-function updateStats(data) {
+function updateStats(data, baseline) {
   if (!data.length) return;
 
   const devs     = data.map(d => d.deviation);
@@ -259,8 +272,8 @@ function updateStats(data) {
   const recent    = data.filter(d => d.date >= TRUMP2_START);
   const recentAvg = recent.length ? recent.reduce((s, d) => s + d.deviation, 0) / recent.length : null;
 
-  const { z, pval } = zTest(data);
-  const sigLabel  = pval < 0.001 ? 'p < 0.001' : pval < 0.01 ? 'p < 0.01' : pval < 0.05 ? 'p < 0.05' : `p = ${pval.toFixed(3)}`;
+  const { z, pval } = zTest(data, baseline);
+  const sigLabel  = pval < 0.001 ? 'p < 0.001' : pval < 0.01 ? 'p < 0.01' : pval < 0.05 ? 'p < 0.05' : `p = ${pval.toFixed(2)}`;
   const sigColor  = pval < 0.05 ? 'red' : 'yellow';
 
   set('stat-avg-dev',  fmtPct(avgDev),            avgDev  > 0 ? 'red' : 'green');
@@ -271,6 +284,32 @@ function updateStats(data) {
   set('stat-low-mag',  lowMag.toFixed(2) + '%',        'green');
   set('stat-sig',      `z=${z.toFixed(2)}`, sigColor);
   document.getElementById('stat-sig-sub').textContent = sigLabel + (pval < 0.05 ? ' — significant' : ' — not significant');
+  document.getElementById('stat-pct-high-sub').textContent = `any random day: ${(baseline * 100).toFixed(1)}%`;
+  document.getElementById('baseline-label').textContent = (baseline * 100).toFixed(0);
+
+  updateVerdict({ n: data.length, avgDev, pctHigh, baseline, pval });
+}
+
+function updateVerdict({ n, avgDev, pctHigh, baseline, pval }) {
+  const box  = document.getElementById('verdict-box');
+  const cost = Math.abs(avgDev * 10);
+  const penalty = pval < 0.05 && avgDev > 0;
+
+  const headline = penalty
+    ? 'Yes — the payroll schedule buys high more than luck explains.'
+    : 'No meaningful timing penalty.';
+
+  const text = penalty
+    ? `Across ${n} contributions, ${pctHigh.toFixed(0)}% bought above the local average vs ` +
+      `${(baseline * 100).toFixed(0)}% for a random day — a gap too large to be chance (p = ${pval.toFixed(2)}). ` +
+      `Still, the damage is small: about $${cost.toFixed(2)} per $1,000 contributed.`
+    : `Across ${n} contributions, ${pctHigh.toFixed(0)}% bought above the local average — close to the ` +
+      `${(baseline * 100).toFixed(0)}% a random day scores anyway (markets climb slowly, drop fast). ` +
+      `The gap is within luck (p = ${pval.toFixed(2)}), and the average premium paid is ` +
+      `${fmtPct(avgDev)} — about $${cost.toFixed(2)} per $1,000 contributed. Fixed payroll timing is noise, not a tax.`;
+
+  box.classList.toggle('bad', penalty);
+  document.getElementById('verdict-text').innerHTML = `<strong>${headline}</strong> ${text}`;
 }
 
 function set(id, text, colorClass) {
@@ -591,7 +630,7 @@ function reanalyze() {
   analysisData = analyze(priceEntries, N);
   const trump  = document.getElementById('toggle-trump').checked;
 
-  updateStats(analysisData);
+  updateStats(analysisData, computeBaseline(priceEntries, N));
   renderMainChart(priceEntries, analysisData);
   renderDevChart(analysisData, trump);
   renderRollingChart(analysisData);

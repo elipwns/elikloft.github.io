@@ -106,6 +106,27 @@ main {
   cursor: pointer;
 }
 
+/* ── Verdict ───────────────────────────────── */
+.verdict-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.verdict-box.bad { border-left-color: var(--red); }
+
+.verdict-box p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.verdict-box strong { color: var(--green); }
+.verdict-box.bad strong { color: var(--red); }
+
 /* ── Stats row ─────────────────────────────── */
 .stats-row {
   display: grid;
