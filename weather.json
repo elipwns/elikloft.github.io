@@ -1,0 +1,10 @@
+{
+  "temperature": 58,
+  "conditions": "Partly Cloudy",
+  "humidity": 73,
+  "windSpeed": 9,
+  "solarRadiation": 438,
+  "uv": 2.4,
+  "lastUpdated": "2026-09-26T18:20:39Z",
+  "stationId": "KORMOUNT70"
+}
